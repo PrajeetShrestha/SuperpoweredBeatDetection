@@ -24,8 +24,6 @@ static const float headroom = powf(10.0f, -HEADROOM_DECIBEL * 0.025);
     NSURL *audioFileLocation;
     float bpmOfSong;
     float startGrid;
-    float cumulativeTimeCount;
-    BOOL beatCountStart;
     int beatCount;
     int beatTracker;
     NSTimer *displayTimer;
@@ -34,15 +32,13 @@ static const float headroom = powf(10.0f, -HEADROOM_DECIBEL * 0.025);
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
-    beatCountStart = NO;
+    self.bulb.hidden = YES;
     beatCount = 0;
     if (posix_memalign((void **)&stereoBuffer, 16, 4096 + 128) != 0) abort(); // Allocating memory, aligned to 16.
     {
         self.beatHolder.text = @"";
     }
 }
-
-
 - (void)displayMediaPicker {
     MPMediaPickerController *picker = [[MPMediaPickerController alloc] initWithMediaTypes:MPMediaTypeMusic];
     [picker setDelegate:self];
@@ -58,6 +54,7 @@ static const float headroom = powf(10.0f, -HEADROOM_DECIBEL * 0.025);
 }
 
 - (void)mediaPicker:(MPMediaPickerController *)mediaPicker didPickMediaItems:(MPMediaItemCollection *)collection {
+    [self refresh];
     [self dismissViewControllerAnimated:YES completion:nil];
     NSURL *url = nil;
     MPMediaItem *item = [collection.items objectAtIndex:0];
@@ -80,6 +77,19 @@ static const float headroom = powf(10.0f, -HEADROOM_DECIBEL * 0.025);
     };
     [self processSongForDecoder:decoder];
 
+}
+
+- (void)refresh {
+
+    bpmOfSong = 0;
+    startGrid = 0;
+    beatCount = 0;
+    beatTracker = 0;
+    displayTimer = nil;
+    [self.playButton setTitle:@"Play" forState:UIControlStateNormal];
+    self.beatCounter.text = @"0.0";
+    self.bulb.hidden = YES;
+    self.currentTimeSlider.value = 0.0f;
 }
 
 
@@ -170,14 +180,10 @@ static const float headroom = powf(10.0f, -HEADROOM_DECIBEL * 0.025);
 
     self.timeElapsed.text = @"0:00";
     self.duration.text = [NSString stringWithFormat:@"-%@",
-                         [self.audioPlayer timeFormat:[self.audioPlayer getAudioDuration]]];
+                          [self.audioPlayer timeFormat:[self.audioPlayer getAudioDuration]]];
 
-    //init the Player to get file properties to set the time labels
     [self.audioPlayer initPlayerWithURL:audioFileLocation];
     self.currentTimeSlider.maximumValue = [self.audioPlayer getAudioDuration];
-
-    //init the current timedisplay and the labels. if a current time was stored
-    //for this player then take it and update the time display
     self.timeElapsed.text = @"0:00";
 
     self.duration.text = [NSString stringWithFormat:@"-%@",
@@ -188,46 +194,47 @@ static const float headroom = powf(10.0f, -HEADROOM_DECIBEL * 0.025);
 
 - (IBAction)playAudioPressed:(id)playButton
 {
-    [self.timer invalidate];
-    [self.updateTimer invalidate];
-    //play audio for the first time or if pause was pressed
-    if (!self.isPaused) {
-//        [self.playButton setBackgroundImage:[UIImage imageNamed:@"audioplayer_pause.png"]
-//                                   forState:UIControlStateNormal];
+    if (audioFileLocation != nil) {
+        [self.timer invalidate];
+        [self.updateTimer invalidate];
+        //play audio for the first time or if pause was pressed
+        if (!self.isPaused) {
+            [self.playButton setTitle:@"Pause" forState:UIControlStateNormal];
 
-        //start a timer to update the time label display
-        self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0
-                                                      target:self
-                                                    selector:@selector(updateTime:)
-                                                    userInfo:nil
-                                                     repeats:YES];
+            //start a timer to update the time label display
+            self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0
+                                                          target:self
+                                                        selector:@selector(updateTime:)
+                                                        userInfo:nil
+                                                         repeats:YES];
 
-        self.updateTimer = [NSTimer scheduledTimerWithTimeInterval:0.001
-                                                            target:self
-                                                          selector:@selector(updateBeatCount:)
-                                                          userInfo:nil
-                                                           repeats:YES];
-        [self.audioPlayer playAudio];
-        self.isPaused = TRUE;
+            self.updateTimer = [NSTimer scheduledTimerWithTimeInterval:0.001
+                                                                target:self
+                                                              selector:@selector(updateBeatCount:)
+                                                              userInfo:nil
+                                                               repeats:YES];
+            [self.audioPlayer playAudio];
+            self.isPaused = TRUE;
 
+        } else {
+            [self.playButton setTitle:@"Play" forState:UIControlStateNormal];
+            [self.audioPlayer pauseAudio];
+            self.isPaused = FALSE;
+        }
     } else {
-        //player is paused and Button is pressed again
-//        [self.playButton setBackgroundImage:[UIImage imageNamed:@"audioplayer_play.png"]
-//                                   forState:UIControlStateNormal];
-
-        [self.audioPlayer pauseAudio];
-        self.isPaused = FALSE;
+        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Select Song!" message:@"Please select the song before you can play" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+        [alert show];
     }
 }
 
 - (void)updateBeatCount:(NSTimer *)timer {
 
-    if ([self.audioPlayer getCurrentAudioTime]*1000 > startGrid) {
+    if ([self.audioPlayer getCurrentAudioTime] * 1000 > startGrid) {
         beatCount++;
         gap = 60000/bpmOfSong;
         if (beatCount >= gap    ) {
+            self.bulb.hidden = NO;
             NSLog(@"Beat Detected");
-
             beatCount = 0;
             beatTracker ++;
             self.beatCounter.text = [NSString stringWithFormat:@"%d Beats",beatTracker];
@@ -235,27 +242,9 @@ static const float headroom = powf(10.0f, -HEADROOM_DECIBEL * 0.025);
             [UIView animateWithDuration:(gap-20)/1000 animations:^{
                 self.bulb.alpha = 0.0f;
             }];
-            
+
         }
     }
-
-
-//    cumulativeTimeCount = cumulativeTimeCount + self.audioPlayer.getCurrentAudioTime;
-//
-//    if (cumulativeTimeCount >= startGrid && !beatCountStart) {
-//        beatCountStart = YES;
-//        NSLog(@"Started Beat Count");
-//    }
-//    if (beatCountStart == YES) {
-//        if (cumulativeTimeCount/bpmOfSong == 0 ) {
-//            NSLog(@"Beat detected");
-//        }
-//    }
-//    NSLog(@"Current Audio Time %f CumulativeCount %f",self.audioPlayer.getCurrentAudioTime,cumulativeTimeCount);
-}
-
-- (void)callBeforeNextBeat:(NSTimer *)timer {
-
 }
 
 - (void)updateTime:(NSTimer *)timer {

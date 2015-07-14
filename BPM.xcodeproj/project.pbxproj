@@ -29,7 +29,6 @@
 		25AD0C8E1B4E6C3500873721 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25AD0C8D1B4E6C3500873721 /* UIKit.framework */; };
 		25AD0C9F1B4E799A00873721 /* TestView.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AD0C9E1B4E799A00873721 /* TestView.m */; };
 		25AD0CDC1B4E8D4500873721 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25AD0CDB1B4E8D4500873721 /* MediaPlayer.framework */; };
-		25B309B11B54C7AC008B2C7C /* lycka.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 25B309B01B54C7AC008B2C7C /* lycka.mp3 */; };
 		25B309B41B54CEBB008B2C7C /* AudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B309B31B54CEBB008B2C7C /* AudioPlayer.m */; };
 		25B309B61B54E8CA008B2C7C /* images.png in Resources */ = {isa = PBXBuildFile; fileRef = 25B309B51B54E8CA008B2C7C /* images.png */; };
 		25D722E41B53701D00D44F08 /* Superpowered.mm in Sources */ = {isa = PBXBuildFile; fileRef = 25D722E31B53701D00D44F08 /* Superpowered.mm */; };
@@ -99,7 +98,6 @@
 		25AD0C9D1B4E799A00873721 /* TestView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestView.h; sourceTree = "<group>"; };
 		25AD0C9E1B4E799A00873721 /* TestView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestView.m; sourceTree = "<group>"; };
 		25AD0CDB1B4E8D4500873721 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
-		25B309B01B54C7AC008B2C7C /* lycka.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = lycka.mp3; sourceTree = "<group>"; };
 		25B309B21B54CEBB008B2C7C /* AudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioPlayer.h; sourceTree = "<group>"; };
 		25B309B31B54CEBB008B2C7C /* AudioPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioPlayer.m; sourceTree = "<group>"; };
 		25B309B51B54E8CA008B2C7C /* images.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = images.png; sourceTree = "<group>"; };
@@ -170,7 +168,6 @@
 				25B309B31B54CEBB008B2C7C /* AudioPlayer.m */,
 				25AD0C331B4E6B3F00873721 /* ViewController.h */,
 				25AD0C7F1B4E6BE400873721 /* ViewController.mm */,
-				25B309B01B54C7AC008B2C7C /* lycka.mp3 */,
 				25B309B51B54E8CA008B2C7C /* images.png */,
 				25AD0C361B4E6B3F00873721 /* Main.storyboard */,
 				25AD0C391B4E6B3F00873721 /* Images.xcassets */,
@@ -331,7 +328,6 @@
 				25B309B61B54E8CA008B2C7C /* images.png in Resources */,
 				25AD0C3D1B4E6B3F00873721 /* LaunchScreen.xib in Resources */,
 				25AD0C3A1B4E6B3F00873721 /* Images.xcassets in Resources */,
-				25B309B11B54C7AC008B2C7C /* lycka.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
